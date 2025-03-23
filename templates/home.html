@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Fantasy Cricket Dream Team Maker</h1>
+    <p>Max Credits: {{ max_credits }} | Team Size: {{ team_size }}</p>
+    <form method="POST" action="{{ url_for('generate_team_route') }}">
+        <label>Pitch Condition:</label>
+        <select name="pitch">
+            <option value="batting">Batting</option>
+            <option value="bowling">Bowling</option>
+        </select>
+        
+        <label>Weather:</label>
+        <select name="weather">
+            <option value="sunny">Sunny</option>
+            <option value="cloudy">Cloudy</option>
+        </select>
+        
+        <label>Risk Level:</label>
+        <select name="risk_level">
+            <option value="balanced">Balanced</option>
+            <option value="safe">Safe</option>
+            <option value="aggressive">Aggressive</option>
+        </select>
+        
+        <label>Must Include Players:</label>
+        <select name="must_include" multiple size="5">
+            {% for player in players %}
+                <option value="{{ player.name }}">{{ player.name }} ({{ player.team }}, {{ player.role }})</option>
+            {% endfor %}
+        </select>
+        
+        <label>Match ID (optional):</label>
+        <input type="text" name="match_id" placeholder="Enter live match ID">
+        
+        <label>Opponent Team:</label>
+        <input type="text" name="opponent_team" placeholder="Enter opponent team">
+        
+        <label>Toss Winner:</label>
+        <select name="toss_winner">
+            <option value="Unknown">Unknown</option>
+            {% for player in players %}
+                <option value="{{ player.team }}">{{ player.team }}</option>
+            {% endfor %}
+        </select>
+        
+        <label>City (for weather):</label>
+        <input type="text" name="city" placeholder="Enter match city">
+        
+        <button type="submit">Generate Dream Team</button>
+    </form>
+{% endblock %}

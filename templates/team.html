@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Your Dream Team</h1>
+    <table>
+        <tr>
+            <th>Role</th><th>Name</th><th>Team</th><th>Credits</th><th>Ownership</th>
+            <th>Predicted Points</th><th>Injury Risk (%)</th><th>Injury Status</th><th>Fitness Score</th>
+        </tr>
+        {% for player in team %}
+            <tr>
+                <td>{{ player.role }}</td><td>{{ player.name }}</td><td>{{ player.team }}</td>
+                <td>{{ player.credits }}</td><td>{{ player.ownership }}</td>
+                <td>{{ player.predicted_points|round(1) }}</td><td>{{ player.injury_risk|round(1) }}</td>
+                <td>{{ player.injury_status }}</td><td>{{ player.fitness_score|round(1) }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <p>Total Credits: {{ total_credits|round(1) }}</p>
+    <p>Total Points: {{ total_points|round(1) }}</p>
+    <p>Captain: {{ captain.name }} ({{ captain_points|round(1) }})</p>
+    <p>Vice-Captain: {{ vice_captain.name }} ({{ vice_captain_points|round(1) }})</p>
+    <p>Adjusted Points: {{ adjusted_points|round(1) }}</p>
+    {% if differential %}
+        <p>Differential Pick: {{ differential.name }} ({{ differential_points|round(1) }})</p>
+    {% endif %}
+    <a href="{{ url_for('feedback', pitch=pitch, weather=weather, match_id=match_id, opponent_team=opponent_team, toss_winner=toss_winner, city=city) }}">Provide Feedback</a>
+{% endblock %}

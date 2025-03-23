@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Provide Feedback</h1>
+    <form method="POST" action="{{ url_for('feedback', pitch=pitch, weather=weather, match_id=match_id, opponent_team=opponent_team, toss_winner=toss_winner, city=city) }}">
+        <table>
+            <tr>
+                <th>Name</th><th>Team</th><th>Role</th><th>Predicted Points</th><th>Actual Points</th><th>Injured?</th><th>Fitness Score (0-100)</th>
+            </tr>
+            {% for player in team %}
+                <tr>
+                    <td>{{ player.name }}</td><td>{{ player.team }}</td><td>{{ player.role }}</td>
+                    <td>{{ predict_points(player, pitch, weather, {'opponent_strength': 1.0, 'toss_winner': toss_winner})|round(1) }}</td>
+                    <td><input type="number" name="points_{{ player.name }}" step="0.1" min="0" required></td>
+                    <td><input type="checkbox" name="injured_{{ player.name }}"></td>
+                    <td><input type="number" name="fitness_{{ player.name }}" min="0" max="100" value="{{ player.fitness_score|round(1) }}" required></td>
+                </tr>
+            {% endfor %}
+        </table>
+        <button type="submit">Submit Feedback</button>
+    </form>
+{% endblock %}
