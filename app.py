@@ -7,7 +7,7 @@ from config.settings import MAX_CREDITS, ROLE_LIMITS, TEAM_SIZE
 import os
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-here')  # Use env var for security
+app.secret_key = os.environ.get('SECRET_KEY', 'fallback-secret-key')
 
 players = load_players()
 current_team = []
@@ -38,8 +38,8 @@ def generate_team_route():
                 flash("Generated team doesn't meet all constraints.", "error")
             return redirect(url_for('view_team', pitch=pitch, weather=weather, match_id=match_id,
                                    opponent_team=opponent_team, toss_winner=toss_winner, city=city))
-        except ValueError as e:
-            flash(str(e), "error")
+        except Exception as e:
+            flash(f"Error generating team: {str(e)}", "error")
     return render_template('home.html', players=players)
 
 @app.route('/team')
@@ -105,19 +105,19 @@ def feedback():
         try:
             for player in current_team:
                 actual_points = float(request.form.get(f"points_{player['name']}", 0))
-                injured = bool(request.form.get(f"injured_{{player['name']}", False))
+                injured = bool(request.form.get(f"injured_{player['name']}", False))  # Fixed f-string syntax
                 fitness_score = float(request.form.get(f"fitness_{player['name']}", player["fitness_score"]))
                 static_features, seq_features, _, _ = extract_features(player, pitch, weather, match_context)
                 update_model(player["name"], actual_points, static_features, seq_features, injured, fitness_score)
             flash("Feedback recorded and model updated!", "success")
             return redirect(url_for('view_team', pitch=pitch, weather=weather, match_id=match_id,
                                    opponent_team=opponent_team, toss_winner=toss_winner, city=city))
-        except ValueError as e:
+        except Exception as e:
             flash(f"Invalid feedback data: {str(e)}", "error")
     
     return render_template('feedback.html', team=current_team, pitch=pitch, weather=weather,
                           match_id=match_id, opponent_team=opponent_team, toss_winner=toss_winner, city=city)
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 10000))  # Render default port
-    app.run(host='0.0.0.0', port=port, debug=False)  # Bind to 0.0.0.0 for Render
+    port = int(os.environ.get('PORT', 10000))
+    app.run(host='0.0.0.0', port=port, debug=False)
