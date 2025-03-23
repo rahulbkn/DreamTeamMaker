@@ -4,10 +4,9 @@ from src.models.optimizer import generate_team, select_leaders, get_differential
 from src.models.predictor import predict_points, predict_injury_risk, predict_fitness_score, update_model, extract_features
 from src.utils.validators import is_valid_team
 from config.settings import MAX_CREDITS, ROLE_LIMITS, TEAM_SIZE
-import os
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-here')  # Use env var for security
+app.secret_key = 'your-secret-key-here'
 
 players = load_players()
 current_team = []
@@ -105,7 +104,7 @@ def feedback():
         try:
             for player in current_team:
                 actual_points = float(request.form.get(f"points_{player['name']}", 0))
-                injured = bool(request.form.get(f"injured_{{player['name']}", False))
+                injured = bool(request.form.get(f"injured_{player['name']}", False))
                 fitness_score = float(request.form.get(f"fitness_{player['name']}", player["fitness_score"]))
                 static_features, seq_features, _, _ = extract_features(player, pitch, weather, match_context)
                 update_model(player["name"], actual_points, static_features, seq_features, injured, fitness_score)
@@ -119,5 +118,4 @@ def feedback():
                           match_id=match_id, opponent_team=opponent_team, toss_winner=toss_winner, city=city)
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 10000))  # Render default port
-    app.run(host='0.0.0.0', port=port, debug=False)  # Bind to 0.0.0.0 for Render
+    app.run(debug=True)
