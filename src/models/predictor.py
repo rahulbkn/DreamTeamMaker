@@ -5,6 +5,7 @@ import sqlite3
 from sklearn.preprocessing import StandardScaler
 import json
 from datetime import datetime
+import os  # Added missing import
 
 DB_FILE = "player_stats.db"
 MODEL_FILE = "player_points_dl_model.keras"
@@ -127,6 +128,7 @@ def update_model(player_name: str, actual_points: float, static_features: np.nda
     data = c.fetchall()
     if len(data) > 10:
         static_X, seq_X, injury_X, fitness_X, points_y, injury_y, fitness_y = [], [], [], [], [], [], []
+        from src.data.player_data import load_players
         for row in data:
             features_split = row[0].split("|")
             static = np.array(list(map(float, features_split[0].split(','))))
